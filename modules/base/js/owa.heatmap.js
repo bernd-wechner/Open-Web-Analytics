@@ -47,7 +47,7 @@ OWA.heatmap.prototype = {
         numRegions: 40,
         alphaIncrement:50,
         demoMode: false,
-        liveMode: false,
+        liveMode: true,
         mapInterval: 1000,
         randomDataCount: 200,
         rowsPerFetch: 100,
@@ -243,11 +243,11 @@ OWA.heatmap.prototype = {
             this.clicks = data.data;
 
             //set more flag
-            if (data.more === true && data.more != null) {
+            if (data.data.more === true && data.data.more != null) {
                 OWA.debug("plotClickData says more flag was set to true");
                 this.setMore(true);
                 //set next page
-                this.setNextPage(data.page);
+                this.setNextPage(data.data.page);
             } else {
                 OWA.debug("plotClickData says more flag was set to false");
                 this.setMore(false);
@@ -617,7 +617,7 @@ OWA.heatmap.prototype = {
     createCanvas: function(w, h) {
 
         var that = this;
-        jQuery("body").append('<canvas id="owa_heatmap" width="'+w+'px" height="'+h+'px" style="position:absolute; top:0px; left:0px; z-index:99;padding:0; margin:0;background: rgba(127, 127, 127, 0.5);"></canvas>');
+        jQuery("body").append('<canvas id="owa_heatmap" width="'+w+'px" height="'+h+'px" style="position:absolute; top:0px; left:0px; z-index:999999;padding:0; margin:0;background: rgba(127, 127, 127, 0.5);"></canvas>');
     },
     
     getDataPoints: function() {
