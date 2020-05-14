@@ -104,11 +104,6 @@ class owa_dbColumn {
             $definition .= ' '.OWA_DTD_NOT_NULL;
         endif;
 
-        // Check for unique
-        if ($this->get('is_unique') == true):
-            $definition .= ' '.OWA_DTD_UNIQUE;
-        endif;
-
         // check for primary key
         if ($this->get('is_primary_key') == true):
             $definition .= ' '.OWA_DTD_PRIMARY_KEY;
