@@ -59,7 +59,7 @@ define('OWA_DTD_BLOB', 'BYTEA');                // Was BLOB
  *  codecheck reveals it is used nowhere outside of getDefintion and then only
  *  if a column has index set.
  *  
- * There is however  a suspicious line in getDefntion:
+ * There is however  a suspicious line in getDefinition:
  * 
  * $definition .= sprintf(", INDEX (%s)", $this->get('name'));
  * 
@@ -95,7 +95,7 @@ define('OWA_DTD_INDEX', 'KEY');             // Unchanged
  *      Which is used in createTable()
  *          and addColumn, modifyColumn, renameColumn
  *          
- *      It's only used if the debcolumn has the attribute 
+ *      It's only used if the dbcolumn has the attribute 
  *      auto_increment set. It is only ever set with setAutoIncrement()
  *      which in turn is never explcity called anywhere.
  *          
@@ -106,22 +106,9 @@ define('OWA_DTD_INDEX', 'KEY');             // Unchanged
  *   and empty string here but this presupposes that it's
  *   only used on OWA_DTD_SERIAL columns.
  */ 
-define('OWA_DTD_AUTO_INCREMENT', 'AUTO_INCREMENT');
+define('OWA_DTD_AUTO_INCREMENT', '');
 
 define('OWA_DTD_NOT_NULL', 'NOT NULL');         // Unchanged
-
-/**
- * Unsure of this one
- * 
- * codecheck reveals it is used only in getDefinition() and only if the
- * column defintion has is_unique set. But is_unique is not referneced 
- * anywhere in the code base and moreover where this is used it provides
- * no data for the %s that was configured.
- * 
- * Hypothesis: an unused setting, either deprecated legacy or intended
- * for possible future use. But can be safely ignored.
-*/ 
-define('OWA_DTD_UNIQUE', 'UNIQUE');    // Was PRIMARY KEY(%s)
 
 // These all unchanged, as appear to be standard SQL
 define('OWA_SQL_ADD_COLUMN', 'ALTER TABLE %s ADD %s %s');   
