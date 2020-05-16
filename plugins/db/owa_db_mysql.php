@@ -32,7 +32,6 @@ define('OWA_DTD_BOOLEAN', 'TINYINT(1)');
 define('OWA_DTD_TIMESTAMP', 'TIMESTAMP');
 define('OWA_DTD_BLOB', 'BLOB');
 define('OWA_DTD_INDEX', 'KEY');
-define('OWA_DTD_AUTO_INCREMENT', 'AUTO_INCREMENT');
 define('OWA_DTD_NOT_NULL', 'NOT NULL');
 define('OWA_SQL_ADD_COLUMN', 'ALTER TABLE %s ADD %s %s');   
 define('OWA_SQL_DROP_COLUMN', 'ALTER TABLE %s DROP %s');

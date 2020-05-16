@@ -94,11 +94,6 @@ class owa_dbColumn {
 
          $definition .= $this->get('data_type');
 
-        // Check for auto increment
-        if ($this->get('auto_increment') == true):
-            $definition .= ' '.OWA_DTD_AUTO_INCREMENT;
-        endif;
-
         // Check for auto Not null
         if ($this->get('is_not_null') == true):
             $definition .= ' '.OWA_DTD_NOT_NULL;
@@ -171,11 +166,6 @@ class owa_dbColumn {
          } else {
              return false;
          }
-     }
-
-     function setAutoIncrement() {
-
-         $this->auto_increment = true;
      }
 
      function setName($name) {

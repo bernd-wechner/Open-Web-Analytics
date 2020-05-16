@@ -82,31 +82,7 @@ define('OWA_DTD_BLOB', 'BYTEA');                // Was BLOB
  *  $db->addIndex( 'owa_domstream', 'domstream_guid' );
  *  $db->addIndex( 'owa_domstream', 'document_id' );             
  */
-
 define('OWA_DTD_INDEX', 'KEY');             // Unchanged
-
-/** Unsure of this one (codecheck needed)
- *  https://www.tutorialspoint.com/postgresql/postgresql_using_autoincrement.htm
- *  Seems MySQL uses a qualifier, and Postgresql a datatype (BIGSERIAL)
- *  
- *  Context of use: 
- *      Used only in getDefinition()
- *      Which is used only in getColumnDefinition
- *      Which is used in createTable()
- *          and addColumn, modifyColumn, renameColumn
- *          
- *      It's only used if the dbcolumn has the attribute 
- *      auto_increment set. It is only ever set with setAutoIncrement()
- *      which in turn is never explcity called anywhere.
- *          
- *   Needs further study. It looks like no column is ever set  
- *   with OWA_DTD_AUTO_INCREMENT.
- *   
- *   Bottom line is we get away with
- *   and empty string here but this presupposes that it's
- *   only used on OWA_DTD_SERIAL columns.
- */ 
-define('OWA_DTD_AUTO_INCREMENT', '');
 
 define('OWA_DTD_NOT_NULL', 'NOT NULL');         // Unchanged
 
