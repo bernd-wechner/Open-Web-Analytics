@@ -71,7 +71,7 @@ class owa_service extends owa_base {
             $this->_loadModules();
             $this->_loadFilters();
             $this->_loadEntities();
-            $this->_loadMetrics();
+            if (defined('OWA_DB_TYPE')) $this->_loadMetrics();
             $this->_loadDimensions();
             $this->_loadFormatters();
             $this->_loadApiMethods();
@@ -82,6 +82,7 @@ class owa_service extends owa_base {
             $this->current_user = owa_coreAPI::supportClassFactory('base', 'serviceUser');
             // the 'log_users' config directive relies on this being populated
             $this->current_user->setUserData( 'user_id' ,  $this->request->state->get('u') );
+            
             // load geolocation obj.
             $this->geolocation = owa_geolocation::getInstance();
         }

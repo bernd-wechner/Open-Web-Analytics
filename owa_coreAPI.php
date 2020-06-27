@@ -108,7 +108,7 @@ class owa_coreAPI {
         $ret = owa_coreAPI::setupStorageEngine($db_type);
 
          if (!$ret) {
-             owa_coreAPI::error(sprintf('Cannot locate proper db class at %s. Exiting.', $connection_class_path));
+             owa_coreAPI::error(sprintf('Faile dto intialise db of type %s. Exiting.', $db_type));
              return;
         } else {
             $connection_class = 'owa_db_'.$db_type;
@@ -471,17 +471,9 @@ class owa_coreAPI {
         /* SETUP STORAGE ENGINE */
 
         // Must be called before any entities are created
-
-        if (!defined('OWA_DTD_INT')) {
-            if (defined('OWA_DB_TYPE')) {
-                owa_coreAPI::setupStorageEngine(OWA_DB_TYPE);
-            } else {
-                owa_coreAPI::setupStorageEngine('mysql');
-            }
-
+        if (defined('OWA_DB_TYPE') && !defined('OWA_DTD_INT')) {
+            owa_coreAPI::setupStorageEngine(OWA_DB_TYPE);
         }
-
-
 
         if (!class_exists('owa_entity')):
             require_once(OWA_BASE_CLASSES_DIR.'owa_entity.php');

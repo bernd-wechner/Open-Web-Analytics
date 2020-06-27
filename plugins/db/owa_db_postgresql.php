@@ -24,6 +24,13 @@
 // $Id$
 //
 
+// TODO: Use these to populate setup form fields when the Database Type selection changes.
+define('OWA_DB_DEFAULT_HOST', 'localhost');
+define('OWA_DB_DEFAULT_PORT', 5432);
+define('OWA_DB_DEFAULT_NAME', 'OWA');
+define('OWA_DB_DEFAULT_USER', 'OWA');
+define('OWA_DB_DEFAULT_PASSWORD', 'password');
+
 define('OWA_DTD_BIGINT', 'BIGINT');      // Unchanged
 define('OWA_DTD_INT', 'INT');            // Unchanged
 define('OWA_DTD_TINYINT', 'SMALLINT');   // Was TINYINT(1)
@@ -32,12 +39,9 @@ define('OWA_DTD_TINYINT4', 'SMALLINT');  // Was TINYINT(4)
 
 // See https://dev.mysql.com/doc/refman/8.0/en/numeric-type-syntax.html
 // SERIAL is an alias for BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE.
-// This is used in only one place, in the owa_user constructor and
-// That line is a candidate for bringing into conformance with other
-// constants herein and dispelling with this one as it is a MySQL 
-// specific alias for BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE
-// and not portable across database engines.
-define('OWA_DTD_SERIAL', 'BIGSERIAL');         // Was SERIAL
+// Postgresql has a similar pseudotype:
+// https://www.postgresqltutorial.com/postgresql-serial/
+define('OWA_DTD_SERIAL', 'SERIAL');
 
 // Primary Key syntax appears same as MySQLs
 // https://dev.mysql.com/doc/refman/8.0/en/partitioning-limitations-partitioning-keys-unique-keys.html
@@ -53,36 +57,14 @@ define('OWA_DTD_BOOLEAN', 'BOOLEAN');           // Was TINYINT(1)
 
 define('OWA_DTD_TIMESTAMP', 'TIMESTAMP');       // Unchanged
 
-define('OWA_DTD_BLOB', 'BYTEA');                // Was BLOB
+// Not sure of this mapping. Needs analysis. It is used only on thes entities/columns:
+//      configuration.settings  
+//      site.settings
+//      session.latest_attributions
+//      queue_item.event
+//      domstream.events
 
-/** Unsure of this one
- *  codecheck reveals it is used nowhere outside of getDefintion and then only
- *  if a column has index set.
- *  
- * There is however  a suspicious line in getDefinition:
- * 
- * $definition .= sprintf(", INDEX (%s)", $this->get('name'));
- * 
- * That DOES NOT use a constant herein and looks very suspisciuously liek it should!
- * 
- * It's hard to determin wher eindex is set as it's such ageneric term with 
- * many code hits. But one place it's clearly used is in addIndex() and code 
- * samples include:
- * 
- *  $db->addIndex($table, 'yyyymmdd');
- *  $db->addIndex( $table, 'site_id' );
- *  $db->addIndex( $table, 'session_id' );
- *  $db->addIndex( 'owa_action_fact', 'action_group, action_name' );
- *  $db->addIndex( 'owa_commerce_transaction_fact', 'yyyymmdd' );
- *  $db->addIndex( 'owa_commerce_line_item_fact', 'yyyymmdd' );
- *  $db->addIndex( 'owa_queue_item', 'status' );
- *  $db->addIndex( 'owa_queue_item', 'event_type' );
- *  $db->addIndex( 'owa_queue_item', 'not_before_timestamp' );
- *  $db->addIndex( 'owa_domstream', 'yyyymmdd' );
- *  $db->addIndex( 'owa_domstream', 'domstream_guid' );
- *  $db->addIndex( 'owa_domstream', 'document_id' );             
- */
-define('OWA_DTD_INDEX', 'KEY');             // Unchanged
+define('OWA_DTD_BLOB', 'TEXT');                 // Was BLOB
 
 define('OWA_DTD_NOT_NULL', 'NOT NULL');         // Unchanged
 
@@ -97,9 +79,6 @@ define('OWA_SQL_DROP_TABLE', 'DROP TABLE IF EXISTS %s');
 define('OWA_SQL_INSERT_ROW', 'INSERT into %s (%s) VALUES (%s)');
 define('OWA_SQL_UPDATE_ROW', 'UPDATE %s SET %s %s');
 define('OWA_SQL_DELETE_ROW', "DELETE from %s %s");
-define('OWA_SQL_CREATE_INDEX', 'CREATE INDEX %s ON %s (%s)');
-define('OWA_SQL_DROP_INDEX', 'DROP INDEX %s ON %s');
-define('OWA_SQL_INDEX', 'INDEX (%s)');
 define('OWA_SQL_BEGIN_TRANSACTION', 'BEGIN');
 define('OWA_SQL_END_TRANSACTION', 'COMMIT');
 
@@ -147,8 +126,39 @@ define('OWA_SQL_NOTREGEXP', 'NOT REGEXP');
 // Unchanged as appear to be standard SQL
 define('OWA_SQL_LIKE', 'LIKE');
 
-// See OWA_DTD_INDEX above. Needs to be ckeched for PostgreSQL compatibility
+
+/** Unsure of this one
+ *  codecheck reveals it is used only in addIndex() 
+ *  
+ * There is also however  a suspicious line in getDefinition:
+ *
+ * $definition .= sprintf(", INDEX (%s)", $this->get('name'));
+ *
+ * That DOES NOT use a constant herein and looks very suspisciuously like it should!
+ *
+ * It's hard to determin wheree index is set as it's such a generic term with
+ * many code hits. But one place it's clearly used is in addIndex() and code
+ * samples include:
+ *
+ *  $db->addIndex($table, 'yyyymmdd');
+ *  $db->addIndex( $table, 'site_id' );
+ *  $db->addIndex( $table, 'session_id' );
+ *  $db->addIndex( 'owa_action_fact', 'action_group, action_name' );
+ *  $db->addIndex( 'owa_commerce_transaction_fact', 'yyyymmdd' );
+ *  $db->addIndex( 'owa_commerce_line_item_fact', 'yyyymmdd' );
+ *  $db->addIndex( 'owa_queue_item', 'status' );
+ *  $db->addIndex( 'owa_queue_item', 'event_type' );
+ *  $db->addIndex( 'owa_queue_item', 'not_before_timestamp' );
+ *  $db->addIndex( 'owa_domstream', 'yyyymmdd' );
+ *  $db->addIndex( 'owa_domstream', 'domstream_guid' );
+ *  $db->addIndex( 'owa_domstream', 'document_id' );
+ *  
+ *  Postgresql syntax example
+ *      'CREATE INDEX idx_address_phone ON address(phone)';
+ */
+define('OWA_SQL_CREATE_INDEX', 'CREATE INDEX IF NOT EXISTS %s ON %s (%s)');
 define('OWA_SQL_ADD_INDEX', 'ALTER TABLE %s ADD INDEX (%s) %s');
+define('OWA_SQL_DROP_INDEX', 'DROP INDEX %s ON %s');
 
 // All unchanged as appear to be standard SQL
 define('OWA_SQL_COUNT', 'COUNT(%s)');
@@ -206,11 +216,11 @@ class owa_db_postgresql extends owa_db {
             // get a connection (explicitly set the character set as UTF-8)
             // see: https://stackoverflow.com/questions/18250167/how-set-utf-8-in-pdo-class-constructor-for-php-pgsql-database#26619837
             $conn_string = sprintf("host=%s port=%s user=%s password=%s dbname=%s options='--client_encoding=UTF8'", 
-                                    $host,
+                                    $host, $port,
                                     $this->getConnectionParam('user'),
                                     $this->getConnectionParam('password'),
-                                    $this->getConnectionParam('name'),
-                                    $port);
+                                    $this->getConnectionParam('name')
+                                    );
             
             // Make a persistent connection if need be.
             // Note: persistent connections are questionable to begin with:
@@ -235,8 +245,7 @@ class owa_db_postgresql extends owa_db {
             return true;
         }
     }
-
-
+   
     /**
      * Database Query
      *
@@ -246,16 +255,16 @@ class owa_db_postgresql extends owa_db {
      */
     function query( $sql ) {
   
-          if ( $this->connection_status == false) {
+        if ( $this->connection_status == false) {
 
               owa_coreAPI::profile($this, __FUNCTION__, __LINE__);
 
               $this->connect();
 
               owa_coreAPI::profile($this, __FUNCTION__, __LINE__);
-          }
+        }
   
-          owa_coreAPI::profile($this, __FUNCTION__, __LINE__);
+        owa_coreAPI::profile($this, __FUNCTION__, __LINE__);
 
         $this->e->debug(sprintf('Query: %s', $sql));
 

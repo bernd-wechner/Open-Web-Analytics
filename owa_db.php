@@ -1005,9 +1005,9 @@ class owa_db extends owa_base {
      * Adds index to a column
      *
      */
-    function addIndex($table_name, $column_name, $index_definition = '') {
+    function addIndex($table_name, $column_name, $index_name = '') {
 
-        return $this->query(sprintf(OWA_SQL_ADD_INDEX, $table_name, $column_name, $index_definition));
+        return $this->query(sprintf(OWA_SQL_ADD_INDEX, $table_name, $column_name, $index_name));
     }
 
     /**
@@ -1027,7 +1027,7 @@ class owa_db extends owa_base {
 
         //create column defs
 
-        $all_cols = $entity->getColumns();
+        $all_cols = $entity->getColumns();  
 
         $columns = '';
 
@@ -1087,7 +1087,37 @@ class owa_db extends owa_base {
         return $this->query(sprintf(OWA_SQL_CREATE_TABLE, $entity->getTableName(), $columns, $table_options));
     }
 
-
+    /**
+     * Creates an index on a table (if needed)
+     *
+     */
+    function createIndex($entity) {
+        // Done implicitly in the createTable if OWA_SQL_INLINE_INDEX was defined.
+        if (defined('OWA_SQL_INLINE_INDEX')) return true;
+            
+        $all_cols = $entity->getColumns();
+        
+        $columns = '';
+        
+        foreach ($all_cols as $k => $v){
+            if ($entity->isIndexColumn($v)):
+                $columns .= $v . ", ";
+            endif;
+        }
+        
+        // Remove trailing comma
+        $columns .= rtrim($columns, ", ");
+        
+        if ($columns):
+            $idx_name = sprintf("idx_%s", $entity->getTableName());
+            $status = $this->query(sprintf(OWA_SQL_CREATE_INDEX, $idx_name, $entity->getTableName(), $columns));
+        else:
+            $status = TRUE; 
+        endif;
+        
+        return $status;
+    }
+        
 
     /**
      * Begins a SQL transaction statement

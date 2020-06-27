@@ -16,6 +16,12 @@
 // $Id$
 //
 
+// TODO: Use these to populate setup form fields when the Database Type selection changes.
+define('OWA_DB_DEFAULT_HOST', 'localhost');
+define('OWA_DB_DEFAULT_PORT', 3306);
+define('OWA_DB_DEFAULT_NAME', 'OWA');
+define('OWA_DB_DEFAULT_USER', 'OWA');
+define('OWA_DB_DEFAULT_PASSWORD', 'password');
 
 define('OWA_DTD_BIGINT', 'BIGINT'); 
 define('OWA_DTD_INT', 'INT');
@@ -31,7 +37,6 @@ define('OWA_DTD_TEXT', 'MEDIUMTEXT');
 define('OWA_DTD_BOOLEAN', 'TINYINT(1)');
 define('OWA_DTD_TIMESTAMP', 'TIMESTAMP');
 define('OWA_DTD_BLOB', 'BLOB');
-define('OWA_DTD_INDEX', 'KEY');
 define('OWA_DTD_NOT_NULL', 'NOT NULL');
 define('OWA_SQL_ADD_COLUMN', 'ALTER TABLE %s ADD %s %s');   
 define('OWA_SQL_DROP_COLUMN', 'ALTER TABLE %s DROP %s');
@@ -43,9 +48,6 @@ define('OWA_SQL_DROP_TABLE', 'DROP TABLE IF EXISTS %s');
 define('OWA_SQL_INSERT_ROW', 'INSERT into %s (%s) VALUES (%s)');
 define('OWA_SQL_UPDATE_ROW', 'UPDATE %s SET %s %s');
 define('OWA_SQL_DELETE_ROW', "DELETE from %s %s");
-define('OWA_SQL_CREATE_INDEX', 'CREATE INDEX %s ON %s (%s)');
-define('OWA_SQL_DROP_INDEX', 'DROP INDEX %s ON %s');
-define('OWA_SQL_INDEX', 'INDEX (%s)');
 define('OWA_SQL_BEGIN_TRANSACTION', 'BEGIN');
 define('OWA_SQL_END_TRANSACTION', 'COMMIT');
 define('OWA_DTD_TABLE_TYPE', 'ENGINE = %s');
@@ -63,7 +65,13 @@ define('OWA_SQL_ASCENDING', 'ASC');
 define('OWA_SQL_REGEXP', 'REGEXP');
 define('OWA_SQL_NOTREGEXP', 'NOT REGEXP');
 define('OWA_SQL_LIKE', 'LIKE');
+
+define('OWA_SQL_INLINE_INDEX', 'INDEX (%s)');
+
+define('OWA_SQL_CREATE_INDEX', 'CREATE INDEX %s ON %s (%s)');
+define('OWA_SQL_DROP_INDEX', 'DROP INDEX %s ON %s');
 define('OWA_SQL_ADD_INDEX', 'ALTER TABLE %s ADD INDEX (%s) %s');
+
 define('OWA_SQL_COUNT', 'COUNT(%s)');
 define('OWA_SQL_SUM', 'SUM(%s)');
 define('OWA_SQL_ROUND', 'ROUND(%s)');

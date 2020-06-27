@@ -253,11 +253,8 @@ class owa_entity {
         // Control loop
         foreach ($all_cols as $k => $v){
         
-            // drop column is it is marked as auto-incement as DB will take care of that.
-            if ($this->properties[$v]->auto_increment === true) {
-                ;
-            } else {
-                
+            // drop column if it is marked as auto-incement as DB will take care of that.
+            if (!$this->properties[$v]->auto_increment) {
                 $db->set($v, $this->get($v, false));
             }
                 
@@ -325,8 +322,9 @@ class owa_entity {
         
         // Persist object
         $status = $db->executeQuery();
+        
         // Add to Cache
-        if ($status === true) {
+        if ($status) {
             $this->addToCache();
         }
         
@@ -543,6 +541,13 @@ class owa_entity {
         return;
     }
     
+    function isIndexColumn($col) {
+        
+        if (array_key_exists($col, $this->properties)) {
+            return $this->properties[$col]->get('index');
+        }
+    }
+    
     /**
      * Create Table
      *
@@ -552,16 +557,24 @@ class owa_entity {
         
         $db = owa_coreAPI::dbSingleton();
         // Persist table
-        $status = $db->createTable($this);
+        $tbl_status = $db->createTable($this);
         
-        if ($status == true):
+        if ($tbl_status == true):
             owa_coreAPI::notice(sprintf("%s Table Created.", $this->getTableName()));
-            return true;
         else:
             owa_coreAPI::notice(sprintf("%s Table Creation Failed.", $this->getTableName()));
-            return false;
         endif;
     
+        // And its index 
+        $idx_status = $db->createIndex($this);
+        
+        if ($tbl_status == true):
+            owa_coreAPI::notice(sprintf("%s Table Indexed.", $this->getTableName()));
+        else:
+            owa_coreAPI::notice(sprintf("%s Table Indexing Failed.", $this->getTableName()));
+        endif;
+        
+        return $tbl_status && $idx_status;
     }
     
     /**

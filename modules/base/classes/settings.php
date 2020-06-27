@@ -56,13 +56,14 @@
       */
      function __construct() {
 
+         // include/load config file
+         $this->loadConfigFile();
+         
          // create configuration object
          $this->config = owa_coreAPI::entityFactory('base.configuration');
          // load the default settings
          $this->config->set('settings', $this->getDefaultSettingsArray());
 
-         // include/load config file
-         $this->loadConfigFile();
          // apply config constants
          $this->applyConfigConstants();
          // setup directory paths
@@ -75,10 +76,6 @@
          //if ($this->isConfigFilePresent()) {
          //    $this->load($this->get('base', 'configuration_id'));
          //}
-
-         // include storage engine class so that DTD constants get loaded
-         owa_coreAPI::setupStorageEngine($this->get('base','db_type'));
-
      }
 
      public function setTimezone() {
@@ -273,12 +270,15 @@
  
             $db_config = owa_coreAPI::entityFactory('base.configuration');
             $db_config->getByPk('id', $id);
-            $db_settings = unserialize($db_config->get('settings'));
-
-            //print $db_settings;
-            // store copy of config for use with updates and set a flag
+            
+            $settings = $db_config->get('settings');
+            owa_coreAPI::debug(sprintf('Loaded settings: %s', $settings));
+            
+            $db_settings = unserialize($settings);
+            owa_coreAPI::debug(sprintf('Unserialized settings: %s', json_encode($db_settings)));
+            
             if (!empty($db_settings)):
-
+                // store copy of config for use with updates and set a flag
                 // needed to get rid of legacy setting that used to be stored in the DB.
                 if (array_key_exists('error_handler', $db_settings['base'])) {
                     unset($db_settings['base']['error_handler']);
@@ -286,9 +286,7 @@
 
                 $this->db_settings = $db_settings;
                 $this->config_from_db = true;
-            endif;
 
-            if (!empty($db_settings)):
                 //print_r($db_settings);
                 //$db_settings = unserialize($db_settings);
 
@@ -308,7 +306,7 @@
                 }
 
                 $this->config->set('settings', $new_config);
-
+                owa_coreAPI::debug(sprintf('New settings: %s', json_encode($new_config)));
 
             endif;
 
@@ -343,8 +341,7 @@
       */
      function save() {
 
-         // serialize array of values prior to update
-
+        // serialize array of values prior to update
         $config = owa_coreAPI::entityFactory('base.configuration');
 
         // if fetch from db flag is not true, try to fetch the config just in
@@ -709,26 +706,26 @@
                         'viewer' => array('view_site_list', 'view_reports'),
                         'everyone' => array()
                 ),
-                'numGoals'                            => 15,
-                'numGoalGroups'                        => 5,
-                'enableEcommerceReporting'            => false, // move to site settings
-                'currencyLocal'                        => 'en_US', // move to site settings
-                'currencyISO3'                        => 'USD',   // move to site settings
-                'memcachedServers'                    => array(),
-                'memcachedPersisantConnections'        => true,
-                'cacheType'                            => 'file',
-                'disabledEndpoints'                    => array(),
-                'disableAllEndpoints'                => false,
-                'processQueuesJobSchedule'            => '10 * * * *',
-                'maxCustomVars'                        => 5, //sdk
-                'update_session_user_name'            => true, // updates the session with latest user_name value
+                'numGoals'                          => 15,
+                'numGoalGroups'                     => 5,
+                'enableEcommerceReporting'          => false,   // move to site settings
+                'currencyLocal'                     => 'en_US', // move to site settings
+                'currencyISO3'                      => 'USD',   // move to site settings
+                'memcachedServers'                  => array(),
+                'memcachedPersisantConnections'     => true,
+                'cacheType'                         => 'file',
+                'disabledEndpoints'                 => array(),
+                'disableAllEndpoints'               => false,
+                'processQueuesJobSchedule'          => '10 * * * *',
+                'maxCustomVars'                     => 5,     //sdk
+                'update_session_user_name'          => true,  // updates the session with latest user_name value
                 'log_owa_user_names'                => true,  // logs the OWA user name as the user_name property on events
-                'logo_image_path'                    => 'base/i/owa-logo-100w.png',
+                'logo_image_path'                   => 'base/i/owa-logo-100w.png',
                 'use_64bit_hash'                    => false,
-                'user_id_illegal_chars'                => array( " ", ";", "'", "\"", "|", ")", "("),
-                'archive_old_events'                => true, // used by event queues to archive processed events.
+                'user_id_illegal_chars'             => array( " ", ";", "'", "\"", "|", ")", "("),
+                'archive_old_events'                => true,  // used by event queues to archive processed events.
                 'request_mode'						=> 'web_app',
-                'db_supported_types'				=> ['mysql' => 'MySQL']
+                'db_supported_types'				=> ['mysql' => 'MySQL', 'postgresql' => 'PostgreSQL']
             )
         );
 

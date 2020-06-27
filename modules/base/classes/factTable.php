@@ -34,9 +34,9 @@ class owa_factTable extends owa_entity {
      
      function __construct() {
          
-         $columns = array();
+        $columns = array();
          
-         $columns['id'] = new owa_dbColumn('id', OWA_DTD_BIGINT);
+        $columns['id'] = new owa_dbColumn('id', OWA_DTD_BIGINT);
         $columns['id']->setPrimaryKey();
         
         $columns['visitor_id'] = new owa_dbColumn('visitor_id', OWA_DTD_BIGINT);

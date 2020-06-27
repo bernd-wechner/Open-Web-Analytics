@@ -31,15 +31,22 @@
 class owa_configuration extends owa_entity {
 
     function __construct() {
-
         $this->setTableName('configuration');
         $this->properties['id'] = new owa_dbColumn;
-        $this->properties['id']->setDataType(OWA_DTD_BIGINT);
         $this->properties['id']->setPrimaryKey();
         $this->properties['settings'] = new owa_dbColumn;
-        $this->properties['settings']->setDataType(OWA_DTD_BLOB);
+        
+        // Defer DataType defintions until the DB type is known 
+        // It is known the minute a config is defined and only 
+        // unknown if one is not yet defined.
+        if (defined('OWA_DB_TYPE')) {
+            $this->properties['id']->setDataType(OWA_DTD_BIGINT);
+            $this->properties['settings']->setDataType(OWA_DTD_BLOB);
+        }
+        
         $this->setCachable();
     }
+    
 }
 
 ?>

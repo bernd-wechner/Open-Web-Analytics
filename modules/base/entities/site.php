@@ -68,7 +68,7 @@ class owa_site extends owa_entity {
     }
 
     function settingsSetFilter($value) {
-        owa_coreAPI::debug('hello rom setFilter');
+        owa_coreAPI::debug('Hello from setFilter');
         $value = serialize($value);
         owa_coreAPI::debug($value);
         return $value;

@@ -61,7 +61,7 @@ class owa_dbColumn {
          if ($data_type) {
              $this->setDataType($data_type);
          }
-
+       
      }
 
      function get($name) {
@@ -102,12 +102,11 @@ class owa_dbColumn {
         // check for primary key
         if ($this->get('is_primary_key') == true):
             $definition .= ' '.OWA_DTD_PRIMARY_KEY;
-            //$definition .= sprintf(", INDEX (%s)", $this->get('name'));
         endif;
 
         // check for index
-        if ($this->get('index') == true):
-            $definition .= sprintf(", INDEX (%s)", $this->get('name'));
+        if ($this->get('index') == true && defined('OWA_SQL_INLINE_INDEX')):
+            $definition .= sprintf(", ".OWA_SQL_INLINE_INDEX, $this->get('name'));
         endif;
 
          return $definition;
@@ -117,6 +116,12 @@ class owa_dbColumn {
      function setDataType($type) {
 
          $this->data_type = $type;
+         
+         // OWA_DTD_SERIAL is thepsuedao datatype sued for autoincrement columns
+         // in MySQL and PostgreSQL.
+         if ($type === OWA_DTD_SERIAL) {
+             $this->auto_increment = true;
+         }         
      }
 
      function setDefaultValue($value) {

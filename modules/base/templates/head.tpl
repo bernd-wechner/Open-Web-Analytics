@@ -2,6 +2,7 @@
 <?php if(!empty($css)): ?>
 <?php foreach ($css as $cssfile): ?>
 <LINK REL=StyleSheet HREF="<?php echo $cssfile['url'];?>" TYPE="text/css">
+<LINK REL=Icon HREF="/favicon.ico" TYPE="image/x-icon">
 <?php endforeach; ?>
 <?php endif;?>
 
